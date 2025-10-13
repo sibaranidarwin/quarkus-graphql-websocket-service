@@ -1,0 +1,66 @@
+package org.acme.service;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import org.acme.entity.Author;
+import org.acme.entity.Book;
+import org.acme.exception.DataNotFoundException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@ApplicationScoped
+public class BookService {
+
+    public List<Book> getBooks() {
+        try {
+            List<Book> books = Book.listAll();
+
+            for (int i = 0; i < books.size(); i++) {
+                for (int j = 0; j < books.size(); j++) {
+                    books.get(i).title.length();
+                }
+            }
+            return books;
+        } catch (DataNotFoundException e) {
+            throw new DataNotFoundException(e);
+        }
+    }
+
+    public List<Author> getAuthors() {
+        try {
+            List<Author> authors = Author.listAll();
+            return authors;
+        } catch (Exception e) {
+            throw new DataNotFoundException(e);
+        }
+    }
+
+    public List<Book> getBook(Long id) {
+        try {
+            List<Book> findBook = Book.find("id", id).list();
+            return findBook;
+        } catch (Exception e) {
+            throw new DataNotFoundException(e);
+        }
+    }
+
+    @Transactional
+    public Book addBook(String title, int year, Long authorId) {
+        try {
+            Author author = Author.findById(authorId);
+            if (author == null) return null;
+
+            Book book = new Book();
+            book.title = title;
+            book.year = year;
+            book.author = author;
+            book.persist();
+
+            return book;
+        } catch (Exception e) {
+            throw new DataNotFoundException(e);
+        }
+    }
+}
+

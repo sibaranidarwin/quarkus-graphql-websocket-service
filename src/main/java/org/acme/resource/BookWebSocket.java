@@ -20,22 +20,23 @@ public class BookWebSocket {
     @OnOpen
     public void onOpen(Session session) {
         sessions.add(session);
-        broadcast("A new user connected. Total: " + sessions.size());
+        darwinBroadcast("A new user connected. Total: " + sessions.size());
     }
 
     @OnClose
     public void onClose(Session session) {
         sessions.remove(session);
 
-        broadcast("A user disconnected. Total: " + sessions.size());
+        darwinBroadcast("A user disconnected. Total: " + sessions.size());
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        broadcast("Message: " + message);
+        darwinBroadcast("Message: " + message);
     }
 
-    public void broadcast(String message) {
+    // Berguna untuk mengirim pesan ke semua client
+    public void darwinBroadcast(String message) {
         sessions.forEach(s -> {
             try {
                 s.getBasicRemote().sendText(message);

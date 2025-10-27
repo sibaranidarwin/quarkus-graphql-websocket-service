@@ -1,16 +1,20 @@
 package org.acme.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.acme.entity.Author;
 import org.acme.entity.Book;
 import org.acme.exception.DataNotFoundException;
+import org.acme.resource.BookWebSocket;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
 public class BookService {
+
+    @Inject
+    BookWebSocket ws;
 
     public List<Book> getBooks() {
         try {
@@ -56,6 +60,10 @@ public class BookService {
             book.year = year;
             book.author = author;
             book.persist();
+
+            if (book != null) {
+                ws.darwinBroadcast("New book added: " + book.title);
+            }
 
             return book;
         } catch (Exception e) {

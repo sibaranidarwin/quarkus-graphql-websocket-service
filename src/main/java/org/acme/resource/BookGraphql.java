@@ -19,10 +19,14 @@ public class BookGraphql {
         return bookService.getBooks();
     }
 
-
     @Query("allAuthor")
     public List<Author> getAllAuthor() {
         return bookService.getAuthors();
+    }
+
+    @Query("allAuthorN1Problem")
+    public List<Author> getAllAuthorN(){
+        return bookService.getAuthorsNProblems();
     }
 
     @Query("book")

@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.acme.entity.Author;
 import org.acme.entity.Book;
 import org.acme.exception.DataNotFoundException;
+import org.acme.repository.AuthorRepository;
 import org.acme.resource.BookWebSocket;
 
 import java.util.List;
@@ -15,6 +16,9 @@ public class BookService {
 
     @Inject
     BookWebSocket ws;
+
+    @Inject
+    AuthorRepository authorRepository;
 
     public List<Book> getBooks() {
         try {
@@ -33,12 +37,28 @@ public class BookService {
 
     public List<Author> getAuthors() {
         try {
+            // Solved n + 1 problems
+            List<Author> authors1 = authorRepository.findAllWithBooks();
+            return authors1;
+        } catch (Exception e) {
+            throw new DataNotFoundException(e);
+        }
+    }
+
+
+    public List<Author> getAuthorsNProblems() {
+        try {
+            //    n + 1 problems
             List<Author> authors = Author.listAll();
+            for (Author author : authors) {
+                author.books.size();
+            }
             return authors;
         } catch (Exception e) {
             throw new DataNotFoundException(e);
         }
     }
+
 
     public List<Book> getBook(Long id) {
         try {
